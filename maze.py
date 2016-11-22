@@ -35,17 +35,33 @@ player_speed = 5
 
 # make walls
 wall1 =  [300, 275, 200, 25]
-wall2 =  [400, 450, 200, 25]
-wall3 =  [100, 100, 25, 200]
+wall2 =  [400, 450, 200, 50]
+wall3 =  [100, 20, 25, 500]
+wall4 =  [360, 180, 150, 30]
+wall5 =  [500, 20, 30, 220]
+wall6 =  [300, 180, 20, 270]
+wall7 =  [500, 275, 30, 200]
+wall8 =  [100, 400, 150, 20]
+wall9 =  [150, 350, 150, 20]
+wall10 =  [100, 300, 150, 20]
+wall11 =  [150, 250, 150, 20]
+wall12 =  [100, 180, 150, 30]
+wall13 =  [100, 20, 500, 30]
+wall14 =  [600, 20, 20, 480]
+wall15 =  [100, 510, 520, 20]
+wall16 =  [170, 450, 150, 20]
+wall17 =  [100, 500, 520, 20]
 
-walls = [wall1, wall2, wall3]
+walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall16, wall17]
 
 # Make coins
-coin1 = [300, 500, 25, 25]
-coin2 = [400, 200, 25, 25]
+coin1 = [460, 310, 25, 25]
+coin2 = [550, 420, 25, 25]
 coin3 = [150, 150, 25, 25]
+coin4 = [330, 220, 25, 25]
+coin5 = [1, 1, 1, 1]
 
-coins = [coin1, coin2, coin3]
+coins = [coin1, coin2, coin3, coin4, coin5]
 
 
 # Game loop
@@ -61,10 +77,10 @@ while not done:
 
     pressed = pygame.key.get_pressed()
 
-    up = pressed[pygame.K_UP]
-    down = pressed[pygame.K_DOWN]
-    left = pressed[pygame.K_LEFT]
-    right = pressed[pygame.K_RIGHT]
+    up = pressed[pygame.K_w]
+    down = pressed[pygame.K_s]
+    left = pressed[pygame.K_a]
+    right = pressed[pygame.K_d]
 
     if up:
         player_vy = -player_speed
