@@ -24,7 +24,9 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
-GREEN = (0, 255, 0)
+GREEN = (0, 150, 0)
+BLUE = (0, 0, 200)
+PURPLE = (157, 38, 173)
 
 
 # Make a player
@@ -49,20 +51,28 @@ wall12 =  [100, 180, 150, 30]
 wall13 =  [100, 20, 500, 30]
 wall14 =  [600, 20, 20, 480]
 wall15 =  [100, 510, 520, 20]
-wall16 =  [170, 450, 150, 20]
+wall16 =  [170, 450, 300, 20]
 wall17 =  [100, 500, 520, 20]
+wall18 =  [350, 350, 150, 20]
 
-walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall16, wall17]
+walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall16, wall17, wall18]
 
 # Make coins
 coin1 = [460, 310, 25, 25]
 coin2 = [550, 420, 25, 25]
 coin3 = [150, 150, 25, 25]
 coin4 = [330, 220, 25, 25]
-coin5 = [1, 1, 1, 1]
+coin5 = [367, 473, 25, 25]
 
 coins = [coin1, coin2, coin3, coin4, coin5]
 
+#Make portal
+portal1 = [545, 30, 40, 25]
+portal2 = [490, 390, 25, 40]
+
+portals = [portal1, portal2]
+
+#Make moving objects
 
 # Game loop
 win = False
@@ -133,21 +143,47 @@ while not done:
     if len(coins) == 0:
         win = True
 
-        
+
+    '''portal stuff'''
+    
+    '''horizontal collision'''
+    for p in portals:
+        if intersects.rect_rect(player, p):
+            if player_vx > 0:
+                player = [550, 55, 25, 25]
+            elif player_vx < 0:
+                player = [550, 55, 25, 25]
+    #465, 400, 25, 25
+    #550, 55, 25, 25
+
+    '''vertical collision'''
+    for p in portals:
+        if intersects.rect_rect(player, p):                    
+            if player_vy > 0:
+                player = [465, 400, 25, 25]
+            if player_vy < 0:
+                player = [465, 400, 25, 25]
+           
+    
+
+                
     # Drawing code (Describe the picture. It isn't actually drawn yet.)
     screen.fill(BLACK)
 
     pygame.draw.rect(screen, WHITE, player)
     
     for w in walls:
-        pygame.draw.rect(screen, RED, w)
+        pygame.draw.rect(screen, GREEN, w)
 
     for c in coins:
         pygame.draw.rect(screen, YELLOW, c)
         
+    for p in portals:
+        pygame.draw.rect(screen, PURPLE, p)
+        
     if win:
         font = pygame.font.Font(None, 48)
-        text = font.render("You Win!", 1, GREEN)
+        text = font.render("You Win!", 1, WHITE)
         screen.blit(text, [400, 200])
 
     
