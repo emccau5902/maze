@@ -5,6 +5,7 @@ import intersects
 # Initialize game engine
 pygame.init()
 
+#Ideas: Moving Walls, Co-op nd score board
 
 # Window
 WIDTH = 800
@@ -24,16 +25,26 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
-GREEN = (0, 150, 0)
+GREEN = (0, 150, 40)
 BLUE = (0, 0, 200)
 PURPLE = (157, 38, 173)
+ORANGE = (244, 100, 66)
 
 
 # Make a player
+
 player =  [200, 150, 25, 25]
 player_vx = 0
 player_vy = 0
 player_speed = 5
+
+'''p2 stuff'''
+player2 =  [230, 130, 25, 25]
+player2_vx = 0
+player2_vy = 0
+player2_speed = 5
+
+
 
 # make walls
 wall1 =  [300, 275, 200, 25]
@@ -67,16 +78,17 @@ coin5 = [367, 473, 25, 25]
 coins = [coin1, coin2, coin3, coin4, coin5]
 
 #Make portal
-portal1 = [545, 30, 40, 25]
-portal2 = [490, 390, 25, 40]
+portal1a = [545, 30, 40, 25]
+portal1b = [495, 390, 25, 40]
 
-portals = [portal1, portal2]
+portals = [portal1a, portal1b]
 
 #Make moving objects
 
 # Game loop
 win = False
 done = False
+#display_score = True
 
 while not done:
     # Event processing (React to key presses, mouse clicks, etc.)
@@ -106,6 +118,26 @@ while not done:
     else:
         player_vx = 0
 
+    '''P2 Controls'''
+    up = pressed[pygame.K_UP]
+    down = pressed[pygame.K_DOWN]
+    left = pressed[pygame.K_LEFT]
+    right = pressed[pygame.K_RIGHT]
+
+    if up:
+        player2_vy = -player2_speed
+    elif down:
+        player2_vy = player2_speed
+    else:
+        player2_vy = 0
+        
+    if left:
+        player2_vx = -player2_speed
+    elif right:
+        player2_vx = player2_speed
+    else:
+        player2_vx = 0
+
         
     # Game logic (Check for collisions, update points, etc.)
     ''' move the player in horizontal direction '''
@@ -131,6 +163,27 @@ while not done:
                 player[1] = w[1] + w[3]
 
 
+    player2[0] += player2_vx
+
+    ''' resolve collisions horizontally '''
+    for w in walls:
+        if intersects.rect_rect(player2, w):        
+            if player2_vx > 0:
+                player2[0] = w[0] - player2[2]
+            elif player2_vx < 0:
+                player2[0] = w[0] + w[2]
+
+    ''' move the player in vertical direction '''
+    player2[1] += player2_vy
+    
+    ''' resolve collisions vertically '''
+    for w in walls:
+        if intersects.rect_rect(player2, w):                    
+            if player2_vy > 0:
+                player2[1] = w[1] - player2[3]
+            if player2_vy < 0:
+                player2[1] = w[1] + w[3]
+
     ''' here is where you should resolve player collisions with screen edges '''
 
 
@@ -139,7 +192,8 @@ while not done:
 
     ''' get the coins '''
     coins = [c for c in coins if not intersects.rect_rect(player, c)]
-
+    coins = [c for c in coins if not intersects.rect_rect(player2, c)]
+    
     if len(coins) == 0:
         win = True
 
@@ -153,8 +207,10 @@ while not done:
                 player = [550, 55, 25, 25]
             elif player_vx < 0:
                 player = [550, 55, 25, 25]
-    #465, 400, 25, 25
+            
+
     #550, 55, 25, 25
+    #465, 400, 25, 25
 
     '''vertical collision'''
     for p in portals:
@@ -163,24 +219,55 @@ while not done:
                 player = [465, 400, 25, 25]
             if player_vy < 0:
                 player = [465, 400, 25, 25]
-           
-    
+
+                
+    '''p2 portal stuff'''
+    '''horizontal collision'''
+    for p in portals:
+        if intersects.rect_rect(player2, p):
+            if player2_vx > 0:
+                player2 = [550, 55, 25, 25]
+            elif player2_vx < 0:
+                player2 = [550, 55, 25, 25]
+            
+
+    #550, 55, 25, 25
+    #465, 400, 25, 25
+
+    '''vertical collision'''
+    for p in portals:
+        if intersects.rect_rect(player2, p):                    
+            if player2_vy > 0:
+                player2 = [465, 400, 25, 25]
+            if player2_vy < 0:
+                player2 = [465, 400, 25, 25]
+
 
                 
     # Drawing code (Describe the picture. It isn't actually drawn yet.)
     screen.fill(BLACK)
 
-    pygame.draw.rect(screen, WHITE, player)
+    pygame.draw.rect(screen, BLUE, player)
+    pygame.draw.rect(screen, YELLOW, player2)
     
     for w in walls:
         pygame.draw.rect(screen, GREEN, w)
 
     for c in coins:
-        pygame.draw.rect(screen, YELLOW, c)
+        pygame.draw.rect(screen, ORANGE, c)
         
     for p in portals:
         pygame.draw.rect(screen, PURPLE, p)
-        
+
+    '''
+    if display_score:
+        font = pygame.font.Font(None, 30)
+        scorea = font.render("P1 Score: " + p1_score, 1, BLUE)
+        scoreb = font.render("P2 Score: " + p2_score, 1, YELLOW)
+        screen.blit(scorea, [660, 10])
+        screen.blit(scoreb, [660, 40])
+    '''
+    
     if win:
         font = pygame.font.Font(None, 48)
         text = font.render("You Win!", 1, WHITE)
