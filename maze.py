@@ -86,9 +86,12 @@ portals = [portal1a, portal1b]
 #Make moving objects
 
 # Game loop
-win = False
+win1 = False
+win2 = False
 done = False
-#display_score = True
+display_score = True
+p1score = 0
+p2score = 0
 
 while not done:
     # Event processing (React to key presses, mouse clicks, etc.)
@@ -191,12 +194,27 @@ while not done:
 
 
     ''' get the coins '''
-    coins = [c for c in coins if not intersects.rect_rect(player, c)]
-    coins = [c for c in coins if not intersects.rect_rect(player2, c)]
-    
-    if len(coins) == 0:
-        win = True
 
+
+    
+    hit_list = [c for c in coins if intersects.rect_rect(player, c)]
+    
+    for hit in hit_list:
+        coins.remove(hit)
+        p1score += 1
+        
+    
+    hit_list2 = [c for c in coins if intersects.rect_rect(player2, c)]
+    
+    for h in hit_list2:
+        coins.remove(h)
+        p2score += 1
+
+
+    if len(coins) == 0 and p1score > p1score:
+        win1 = True
+    if len(coins) == 0 and p2score > p1score:
+        win2 = True
 
     '''portal stuff'''
     
@@ -259,18 +277,23 @@ while not done:
     for p in portals:
         pygame.draw.rect(screen, PURPLE, p)
 
-    '''
+    
     if display_score:
         font = pygame.font.Font(None, 30)
-        scorea = font.render("P1 Score: " + p1_score, 1, BLUE)
-        scoreb = font.render("P2 Score: " + p2_score, 1, YELLOW)
+        scorea = font.render("P1 Score: " + str(p1score), 1, BLUE)
+        scoreb = font.render("P2 Score: " + str(p2score), 1, YELLOW)
         screen.blit(scorea, [660, 10])
         screen.blit(scoreb, [660, 40])
-    '''
+        
     
-    if win:
+    
+    if win1:
         font = pygame.font.Font(None, 48)
-        text = font.render("You Win!", 1, WHITE)
+        text = font.render("Player 1 Wins!", 1, WHITE)
+        screen.blit(text, [400, 200])
+    if win2:
+        font = pygame.font.Font(None, 48)
+        text = font.render("Player 2 Wins!", 1, WHITE)
         screen.blit(text, [400, 200])
 
     
