@@ -5,11 +5,11 @@ import intersects
 # Initialize game engine
 pygame.init()
 
-#Ideas: Moving Walls, Co-op nd score board
+#Ideas: Moving Walls
 
 # Window
-WIDTH = 800
-HEIGHT = 600
+WIDTH = 1000
+HEIGHT = 800
 SIZE = (WIDTH, HEIGHT)
 TITLE = "Maze"
 screen = pygame.display.set_mode(SIZE)
@@ -33,40 +33,44 @@ ORANGE = (244, 100, 66)
 
 # Make a player
 
-player =  [200, 150, 25, 25]
+player =  [180, 110, 25, 25]
 player_vx = 0
 player_vy = 0
 player_speed = 5
 
 '''p2 stuff'''
-player2 =  [230, 130, 25, 25]
+player2 =  [420, 110, 25, 25]
 player2_vx = 0
 player2_vy = 0
 player2_speed = 5
 
 
+#Powerups
+speed1 = [200, 600, 25, 25]
+
+speeds = [speed1]
 
 # make walls
 wall1 =  [300, 275, 200, 25]
 wall2 =  [400, 450, 200, 50]
-wall3 =  [100, 20, 25, 500]
+wall3 =  [100, 20, 25, 750]
 wall4 =  [360, 180, 150, 30]
 wall5 =  [500, 20, 30, 220]
 wall6 =  [300, 180, 20, 270]
 wall7 =  [500, 275, 30, 200]
-wall8 =  [100, 400, 150, 20]
+wall8 =  [200, 300, 20, 50]
 wall9 =  [150, 350, 150, 20]
-wall10 =  [100, 300, 150, 20]
-wall11 =  [150, 250, 150, 20]
+wall10 =  [250, 180, 20, 130]
+wall11 =  [150, 250, 100, 20]
 wall12 =  [100, 180, 150, 30]
-wall13 =  [100, 20, 500, 30]
+wall13 =  [100, 20, 850, 30]
 wall14 =  [600, 20, 20, 480]
-wall15 =  [100, 510, 520, 20]
+wall15 =  [200, 500, 420, 20]
 wall16 =  [170, 450, 300, 20]
-wall17 =  [100, 500, 520, 20]
+wall17 =  [100, 500, 60, 20]
 wall18 =  [350, 350, 150, 20]
 
-walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall16, wall17, wall18]
+walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18]
 
 # Make coins
 coin1 = [460, 310, 25, 25]
@@ -193,9 +197,13 @@ while not done:
 
 
 
-    ''' get the coins '''
+    ''' get the collectables '''
 
+    powerup = [s for s in speeds if intersects.rect_rect(player, s)]
 
+    for po in powerup:
+        speeds.remove(po)
+        player_speed = 10
     
     hit_list = [c for c in coins if intersects.rect_rect(player, c)]
     
@@ -211,7 +219,7 @@ while not done:
         p2score += 1
 
 
-    if len(coins) == 0 and p1score > p1score:
+    if len(coins) == 0 and p1score > p2score:
         win1 = True
     if len(coins) == 0 and p2score > p1score:
         win2 = True
@@ -265,8 +273,8 @@ while not done:
     # Drawing code (Describe the picture. It isn't actually drawn yet.)
     screen.fill(BLACK)
 
-    pygame.draw.rect(screen, BLUE, player)
-    pygame.draw.rect(screen, YELLOW, player2)
+    pygame.draw.rect(screen, RED, player)
+    pygame.draw.rect(screen, BLUE, player2)
     
     for w in walls:
         pygame.draw.rect(screen, GREEN, w)
@@ -277,24 +285,27 @@ while not done:
     for p in portals:
         pygame.draw.rect(screen, PURPLE, p)
 
-    
+    for s in speeds:
+        pygame.draw.ellipse(screen, YELLOW, s)
+
+        
     if display_score:
         font = pygame.font.Font(None, 30)
-        scorea = font.render("P1 Score: " + str(p1score), 1, BLUE)
-        scoreb = font.render("P2 Score: " + str(p2score), 1, YELLOW)
-        screen.blit(scorea, [660, 10])
-        screen.blit(scoreb, [660, 40])
+        scorea = font.render("P1 Score: " + str(p1score), 1, RED)
+        scoreb = font.render("P2 Score: " + str(p2score), 1, BLUE)
+        screen.blit(scorea, [130, 55])
+        screen.blit(scoreb, [380, 55])
         
     
     
     if win1:
         font = pygame.font.Font(None, 48)
         text = font.render("Player 1 Wins!", 1, WHITE)
-        screen.blit(text, [400, 200])
+        screen.blit(text, [200, 100])
     if win2:
         font = pygame.font.Font(None, 48)
         text = font.render("Player 2 Wins!", 1, WHITE)
-        screen.blit(text, [400, 200])
+        screen.blit(text, [200, 100])
 
     
     # Update screen (Actually draw the picture in the window.)
