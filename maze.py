@@ -5,16 +5,18 @@ import intersects
 # Initialize game engine
 pygame.init()
 
-#Ideas: Moving Walls
+#To Do: read me
 
 # Window
 WIDTH = 1000
 HEIGHT = 800
 SIZE = (WIDTH, HEIGHT)
-TITLE = "Maze"
+TITLE = "Mediocre Multiplayer Coin-Get Program"
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption(TITLE)
 
+#Font
+MY_FONT = pygame.font.Font(None, 30)
 
 # Timer
 clock = pygame.time.Clock()
@@ -69,8 +71,11 @@ wall15 =  [200, 500, 420, 20]
 wall16 =  [170, 450, 300, 20]
 wall17 =  [100, 500, 60, 20]
 wall18 =  [350, 350, 150, 20]
+wall19 =  [100, 770, 850, 20]
+wall20 =  [950, 20, 20, 770]
 
-walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18]
+
+walls = [wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20]
 
 # Make coins
 coin1 = [460, 310, 25, 25]
@@ -87,15 +92,20 @@ portal1b = [495, 390, 25, 40]
 
 portals = [portal1a, portal1b]
 
-#Make moving objects
 
-# Game loop
+#other stuff i guess
 win1 = False
 win2 = False
-done = False
 display_score = True
 p1score = 0
 p2score = 0
+p_time = 0
+ticks = 0
+
+
+# Game loop
+done = False
+
 
 while not done:
     # Event processing (React to key presses, mouse clicks, etc.)
@@ -202,8 +212,15 @@ while not done:
     powerup = [s for s in speeds if intersects.rect_rect(player, s)]
 
     for po in powerup:
+        p_time = 5
         speeds.remove(po)
-        player_speed = 10
+        player_speed = 7
+    powerup = [s for s in speeds if intersects.rect_rect(player2, s)]
+
+    for po in powerup:
+        p_time = 5
+        speeds.remove(po)
+        player2_speed = 7
     
     hit_list = [c for c in coins if intersects.rect_rect(player, c)]
     
@@ -269,7 +286,17 @@ while not done:
                 player2 = [465, 400, 25, 25]
 
 
-                
+    ''' timer stuff '''
+    if done == False:
+        ticks += 1
+
+        if ticks % refresh_rate == 0:
+            p_time -= 1
+
+        if p_time == 0:
+            player_speed = 5
+            player2_speed = 5
+            
     # Drawing code (Describe the picture. It isn't actually drawn yet.)
     screen.fill(BLACK)
 
@@ -288,11 +315,15 @@ while not done:
     for s in speeds:
         pygame.draw.ellipse(screen, YELLOW, s)
 
-        
+    ''' timer text '''
+    timer_text = MY_FONT.render("Power Up Time: " + str(p_time), True, WHITE)
+    if p_time >= 1:
+        screen.blit(timer_text, [420, 475])
+
+    
     if display_score:
-        font = pygame.font.Font(None, 30)
-        scorea = font.render("P1 Score: " + str(p1score), 1, RED)
-        scoreb = font.render("P2 Score: " + str(p2score), 1, BLUE)
+        scorea = MY_FONT.render("P1 Score: " + str(p1score), 1, RED)
+        scoreb = MY_FONT.render("P2 Score: " + str(p2score), 1, BLUE)
         screen.blit(scorea, [130, 55])
         screen.blit(scoreb, [380, 55])
         
