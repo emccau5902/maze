@@ -5,7 +5,9 @@ import intersects
 # Initialize game engine
 pygame.init()
 
-#To Do: read me
+#to do: have exit and screen wrap stuff
+#23/36
+#63/100
 
 # Window
 WIDTH = 1000
@@ -214,13 +216,13 @@ while not done:
     for po in powerup:
         p_time = 5
         speeds.remove(po)
-        player_speed = 7
+        player_speed = 8
     powerup = [s for s in speeds if intersects.rect_rect(player2, s)]
 
     for po in powerup:
         p_time = 5
         speeds.remove(po)
-        player2_speed = 7
+        player2_speed = 8
     
     hit_list = [c for c in coins if intersects.rect_rect(player, c)]
     
