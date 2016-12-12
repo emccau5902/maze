@@ -6,8 +6,8 @@ import intersects
 pygame.init()
 
 #to do: have exit and screen wrap stuff
-#23/36
-#63/100
+#26/36
+#72/100
 
 # Window
 WIDTH = 1000
@@ -19,6 +19,7 @@ pygame.display.set_caption(TITLE)
 
 #Font
 MY_FONT = pygame.font.Font(None, 30)
+MY_FONT2 = pygame.font.Font(None, 100)
 
 # Timer
 clock = pygame.time.Clock()
@@ -94,7 +95,10 @@ portal1b = [495, 390, 25, 40]
 
 portals = [portal1a, portal1b]
 
-
+#stages
+START = 0
+PLAYING = 1
+END = 2
 #other stuff i guess
 win1 = False
 win2 = False
@@ -103,9 +107,15 @@ p1score = 0
 p2score = 0
 p_time = 0
 ticks = 0
+def setup():
+    global stage
+    
+    stage = START
+    
 
 
 # Game loop
+setup()
 done = False
 
 
@@ -116,229 +126,258 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
 
-    pressed = pygame.key.get_pressed()
+            
+        elif event.type == pygame.KEYDOWN:
+            
+            if stage == START:
+                if event.key == pygame.K_SPACE:
+                    stage = PLAYING
+                  
+            elif stage == END:
+                if event.key == pygame.K_SPACE:
+                    setup()
 
-    up = pressed[pygame.K_w]
-    down = pressed[pygame.K_s]
-    left = pressed[pygame.K_a]
-    right = pressed[pygame.K_d]
 
-    if up:
-        player_vy = -player_speed
-    elif down:
-        player_vy = player_speed
-    else:
-        player_vy = 0
-        
-    if left:
-        player_vx = -player_speed
-    elif right:
-        player_vx = player_speed
-    else:
-        player_vx = 0
+                    
+    
+    if stage == PLAYING:
+        pressed = pygame.key.get_pressed()
+        up = pressed[pygame.K_w]
+        down = pressed[pygame.K_s]
+        left = pressed[pygame.K_a]
+        right = pressed[pygame.K_d]
 
-    '''P2 Controls'''
-    up = pressed[pygame.K_UP]
-    down = pressed[pygame.K_DOWN]
-    left = pressed[pygame.K_LEFT]
-    right = pressed[pygame.K_RIGHT]
+        if up:
+            player_vy = -player_speed
+        elif down:
+            player_vy = player_speed
+        else:
+            player_vy = 0
+            
+        if left:
+            player_vx = -player_speed
+        elif right:
+            player_vx = player_speed
+        else:
+            player_vx = 0
 
-    if up:
-        player2_vy = -player2_speed
-    elif down:
-        player2_vy = player2_speed
-    else:
-        player2_vy = 0
-        
-    if left:
-        player2_vx = -player2_speed
-    elif right:
-        player2_vx = player2_speed
-    else:
-        player2_vx = 0
+        '''P2 Controls'''
+        up = pressed[pygame.K_UP]
+        down = pressed[pygame.K_DOWN]
+        left = pressed[pygame.K_LEFT]
+        right = pressed[pygame.K_RIGHT]
+
+        if up:
+            player2_vy = -player2_speed
+        elif down:
+            player2_vy = player2_speed
+        else:
+            player2_vy = 0
+            
+        if left:
+            player2_vx = -player2_speed
+        elif right:
+            player2_vx = player2_speed
+        else:
+            player2_vx = 0
 
         
     # Game logic (Check for collisions, update points, etc.)
-    ''' move the player in horizontal direction '''
-    player[0] += player_vx
+    if stage == PLAYING:
+        ''' move the player in horizontal direction '''
+        player[0] += player_vx
 
-    ''' resolve collisions horizontally '''
-    for w in walls:
-        if intersects.rect_rect(player, w):        
-            if player_vx > 0:
-                player[0] = w[0] - player[2]
-            elif player_vx < 0:
-                player[0] = w[0] + w[2]
+        ''' resolve collisions horizontally '''
+        for w in walls:
+            if intersects.rect_rect(player, w):        
+                if player_vx > 0:
+                    player[0] = w[0] - player[2]
+                elif player_vx < 0:
+                    player[0] = w[0] + w[2]
 
-    ''' move the player in vertical direction '''
-    player[1] += player_vy
-    
-    ''' resolve collisions vertically '''
-    for w in walls:
-        if intersects.rect_rect(player, w):                    
-            if player_vy > 0:
-                player[1] = w[1] - player[3]
-            if player_vy < 0:
-                player[1] = w[1] + w[3]
-
-
-    player2[0] += player2_vx
-
-    ''' resolve collisions horizontally '''
-    for w in walls:
-        if intersects.rect_rect(player2, w):        
-            if player2_vx > 0:
-                player2[0] = w[0] - player2[2]
-            elif player2_vx < 0:
-                player2[0] = w[0] + w[2]
-
-    ''' move the player in vertical direction '''
-    player2[1] += player2_vy
-    
-    ''' resolve collisions vertically '''
-    for w in walls:
-        if intersects.rect_rect(player2, w):                    
-            if player2_vy > 0:
-                player2[1] = w[1] - player2[3]
-            if player2_vy < 0:
-                player2[1] = w[1] + w[3]
-
-    ''' here is where you should resolve player collisions with screen edges '''
-
-
-
-
-
-    ''' get the collectables '''
-
-    powerup = [s for s in speeds if intersects.rect_rect(player, s)]
-
-    for po in powerup:
-        p_time = 5
-        speeds.remove(po)
-        player_speed = 8
-    powerup = [s for s in speeds if intersects.rect_rect(player2, s)]
-
-    for po in powerup:
-        p_time = 5
-        speeds.remove(po)
-        player2_speed = 8
-    
-    hit_list = [c for c in coins if intersects.rect_rect(player, c)]
-    
-    for hit in hit_list:
-        coins.remove(hit)
-        p1score += 1
+        ''' move the player in vertical direction '''
+        player[1] += player_vy
         
-    
-    hit_list2 = [c for c in coins if intersects.rect_rect(player2, c)]
-    
-    for h in hit_list2:
-        coins.remove(h)
-        p2score += 1
+        ''' resolve collisions vertically '''
+        for w in walls:
+            if intersects.rect_rect(player, w):                    
+                if player_vy > 0:
+                    player[1] = w[1] - player[3]
+                if player_vy < 0:
+                    player[1] = w[1] + w[3]
 
 
-    if len(coins) == 0 and p1score > p2score:
-        win1 = True
-    if len(coins) == 0 and p2score > p1score:
-        win2 = True
+        player2[0] += player2_vx
 
-    '''portal stuff'''
-    
-    '''horizontal collision'''
-    for p in portals:
-        if intersects.rect_rect(player, p):
-            if player_vx > 0:
-                player = [550, 55, 25, 25]
-            elif player_vx < 0:
-                player = [550, 55, 25, 25]
+        ''' resolve collisions horizontally '''
+        for w in walls:
+            if intersects.rect_rect(player2, w):        
+                if player2_vx > 0:
+                    player2[0] = w[0] - player2[2]
+                elif player2_vx < 0:
+                    player2[0] = w[0] + w[2]
+
+        ''' move the player in vertical direction '''
+        player2[1] += player2_vy
+        
+        ''' resolve collisions vertically '''
+        for w in walls:
+            if intersects.rect_rect(player2, w):                    
+                if player2_vy > 0:
+                    player2[1] = w[1] - player2[3]
+                if player2_vy < 0:
+                    player2[1] = w[1] + w[3]
+
+        ''' here is where you should resolve player collisions with screen edges '''
+
+
+
+
+
+        ''' get the collectables '''
+
+        powerup = [s for s in speeds if intersects.rect_rect(player, s)]
+
+        for po in powerup:
+            p_time = 5
+            speeds.remove(po)
+            player_speed = 8
+        powerup = [s for s in speeds if intersects.rect_rect(player2, s)]
+
+        for po in powerup:
+            p_time = 5
+            speeds.remove(po)
+            player2_speed = 8
+        
+        hit_list = [c for c in coins if intersects.rect_rect(player, c)]
+        
+        for hit in hit_list:
+            coins.remove(hit)
+            p1score += 1
             
+        
+        hit_list2 = [c for c in coins if intersects.rect_rect(player2, c)]
+        
+        for h in hit_list2:
+            coins.remove(h)
+            p2score += 1
 
-    #550, 55, 25, 25
-    #465, 400, 25, 25
 
-    '''vertical collision'''
-    for p in portals:
-        if intersects.rect_rect(player, p):                    
-            if player_vy > 0:
-                player = [465, 400, 25, 25]
-            if player_vy < 0:
-                player = [465, 400, 25, 25]
+        if len(coins) == 0 and p1score > p2score:
+            win1 = True
+            stage = END
+        if len(coins) == 0 and p2score > p1score:
+            win2 = True
+            stage = END
 
+        '''portal stuff'''
+        
+        '''horizontal collision'''
+        for p in portals:
+            if intersects.rect_rect(player, p):
+                if player_vx > 0:
+                    player = [550, 55, 25, 25]
+                elif player_vx < 0:
+                    player = [550, 55, 25, 25]
                 
-    '''p2 portal stuff'''
-    '''horizontal collision'''
-    for p in portals:
-        if intersects.rect_rect(player2, p):
-            if player2_vx > 0:
-                player2 = [550, 55, 25, 25]
-            elif player2_vx < 0:
-                player2 = [550, 55, 25, 25]
-            
 
-    #550, 55, 25, 25
-    #465, 400, 25, 25
+        #550, 55, 25, 25
+        #465, 400, 25, 25
 
-    '''vertical collision'''
-    for p in portals:
-        if intersects.rect_rect(player2, p):                    
-            if player2_vy > 0:
-                player2 = [465, 400, 25, 25]
-            if player2_vy < 0:
-                player2 = [465, 400, 25, 25]
+        '''vertical collision'''
+        for p in portals:
+            if intersects.rect_rect(player, p):                    
+                if player_vy > 0:
+                    player = [465, 400, 25, 25]
+                if player_vy < 0:
+                    player = [465, 400, 25, 25]
+
+                    
+        '''p2 portal stuff'''
+        '''horizontal collision'''
+        for p in portals:
+            if intersects.rect_rect(player2, p):
+                if player2_vx > 0:
+                    player2 = [550, 55, 25, 25]
+                elif player2_vx < 0:
+                    player2 = [550, 55, 25, 25]
+                
+
+        #550, 55, 25, 25
+        #465, 400, 25, 25
+
+        '''vertical collision'''
+        for p in portals:
+            if intersects.rect_rect(player2, p):                    
+                if player2_vy > 0:
+                    player2 = [465, 400, 25, 25]
+                if player2_vy < 0:
+                    player2 = [465, 400, 25, 25]
 
 
-    ''' timer stuff '''
-    if done == False:
-        ticks += 1
+        ''' timer stuff '''
+        if done == False:
+            ticks += 1
 
-        if ticks % refresh_rate == 0:
-            p_time -= 1
+            if ticks % refresh_rate == 0:
+                p_time -= 1
 
-        if p_time == 0:
-            player_speed = 5
-            player2_speed = 5
+            if p_time == 0:
+                player_speed = 5
+                player2_speed = 5
             
     # Drawing code (Describe the picture. It isn't actually drawn yet.)
+    
     screen.fill(BLACK)
 
-    pygame.draw.rect(screen, RED, player)
-    pygame.draw.rect(screen, BLUE, player2)
     
-    for w in walls:
-        pygame.draw.rect(screen, GREEN, w)
 
-    for c in coins:
-        pygame.draw.rect(screen, ORANGE, c)
+    if stage == START:
+        text1 = MY_FONT2.render("(Press SPACE to play)", True, WHITE)
+        screen.blit(text1, [125, 300])
         
-    for p in portals:
-        pygame.draw.rect(screen, PURPLE, p)
 
-    for s in speeds:
-        pygame.draw.ellipse(screen, YELLOW, s)
 
-    ''' timer text '''
-    timer_text = MY_FONT.render("Power Up Time: " + str(p_time), True, WHITE)
-    if p_time >= 1:
-        screen.blit(timer_text, [420, 475])
+        
+    if stage == PLAYING:
 
-    
-    if display_score:
-        scorea = MY_FONT.render("P1 Score: " + str(p1score), 1, RED)
-        scoreb = MY_FONT.render("P2 Score: " + str(p2score), 1, BLUE)
-        screen.blit(scorea, [130, 55])
-        screen.blit(scoreb, [380, 55])
+        
+        pygame.draw.rect(screen, RED, player)
+        pygame.draw.rect(screen, BLUE, player2)
+        for w in walls:
+            pygame.draw.rect(screen, GREEN, w)
+
+        for c in coins:
+            pygame.draw.rect(screen, ORANGE, c)
+            
+        for p in portals:
+            pygame.draw.rect(screen, PURPLE, p)
+
+        for s in speeds:
+            pygame.draw.ellipse(screen, YELLOW, s)
+
+        ''' timer text '''
+        timer_text = MY_FONT.render("Power Up Time: " + str(p_time), True, WHITE)
+        if p_time >= 1:
+            screen.blit(timer_text, [420, 475])
+
+        
+        if display_score:
+            scorea = MY_FONT.render("P1 Score: " + str(p1score), 1, RED)
+            scoreb = MY_FONT.render("P2 Score: " + str(p2score), 1, BLUE)
+            screen.blit(scorea, [130, 55])
+            screen.blit(scoreb, [380, 55])
         
     
-    
-    if win1:
-        font = pygame.font.Font(None, 48)
-        text = font.render("Player 1 Wins!", 1, WHITE)
-        screen.blit(text, [200, 100])
-    if win2:
-        font = pygame.font.Font(None, 48)
-        text = font.render("Player 2 Wins!", 1, WHITE)
-        screen.blit(text, [200, 100])
+    if stage == END:
+        if win1:
+            font = pygame.font.Font(None, 48)
+            text = font.render("Player 1 Wins!", 1, WHITE)
+            screen.blit(text, [200, 100])
+        if win2:
+            font = pygame.font.Font(None, 48)
+            text = font.render("Player 2 Wins!", 1, WHITE)
+            screen.blit(text, [200, 100])
 
     
     # Update screen (Actually draw the picture in the window.)
